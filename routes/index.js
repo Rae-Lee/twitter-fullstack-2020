@@ -5,8 +5,8 @@ const admin = require('./modules/admin')
 
 router.use('/admin', admin)
 
-router.get('/twitters', tweetController.getTweets)
-
-router.use('/', (req, res) => res.redirect('/tweets'))
+router.get('/tweets', tweetController.getTweets)
+router.get('/', (req, res) => res.render('partials/topFollowers'))
+//router.use('/', (req, res) => res.redirect('/tweets'))
 
 module.exports = router

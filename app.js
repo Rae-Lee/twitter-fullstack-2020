@@ -8,6 +8,7 @@ const port = process.env.PORT || 3000
 
 app.engine('hbs', handlebars({ extname: '.hbs' }))
 app.set('view engine', 'hbs')
+app.use(express.static('public'))
 
 const db = require('./models')
 // use helpers.getUser(req) to replace req.user

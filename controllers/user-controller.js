@@ -25,7 +25,7 @@ const userController = {
           isFollowed: followingList.includes(topFollowing.id)
         }
       })
-      return res.render('followings', { followings: result, topFollowings: topFollowingList })
+      return res.render('followship', { user: viewUser, followings: result, topFollowings: topFollowingList })
     })
     .catch(err => next(err))
   },
@@ -51,7 +51,7 @@ const userController = {
               isFollowed: followingList.includes(topFollowing.id)
             }
           })
-        return res.render('followings', { followers: result, topFollowings: topFollowingList })
+        return res.render('followship', { user: viewUser, followings: result, topFollowings: topFollowingList })
       })
       .catch(err => next(err))
   },

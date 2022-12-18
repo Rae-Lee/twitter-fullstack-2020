@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
+const Tweet = db.Tweet
 const User = db.User
 const Followship = db.Followship
 const { getUser } = require('../_helpers')
@@ -60,10 +61,32 @@ const userController = {
     req.flash('success_messages', '成功登入！')
     res.redirect('/tweets')
   },
-  logout: (req, res) => {
+  logout: (req, res, next) => {
     req.flash('success_messages', '登出成功！')
-    req.logout()
-    res.redirect('/signin')
+    // req.logout()
+    // res.redirect('/signin')
+    req.logout(function (err) {
+      if (err) { return next(err) }
+      res.redirect('/signin')
+    })
+  },
+  getTweets: (req, res, next) => {
+    // 個人頁面的推文抓取
+
+    return Tweet.findAll({
+      order: [['createdAt', 'DESC']],
+      where: { UserId: req.params.id },
+      include: [User],
+      raw: true,
+      nest: true
+    })
+      .then(tweets => {
+        if (!tweets) throw new Error("Restaurant didn't exist!")
+        return res.render('tweet', {
+          tweets
+        })
+      })
+      .catch(err => next(err))
   },
   getFollowings: (req, res, next) => {
     const userId = req.params.id
@@ -119,7 +142,7 @@ const userController = {
   },
   addFollowship: (req, res, next) => {
     const followingId = req.body.id
-    if(Number(followingId) === Number(getUser(req).id)){
+    if (Number(followingId) === Number(getUser(req).id)) {
       req.flash('error_messages', '不得追蹤自己')
       res.status(200)
       return res.redirect('back')
@@ -131,16 +154,17 @@ const userController = {
       .then(([followingUser, followship]) => {
         if (!followingUser) throw new Error('該用戶不存在')
         if (followship) throw new Error('已經追蹤該用戶')
-         return Followship.create({ followerId: getUser(req).id, followingId: followingId})
-        
+        return Followship.create({ followerId: getUser(req).id, followingId: followingId })
+
       })
-      .then(() => { 
-        return res.redirect('back')})
+      .then(() => {
+        return res.redirect('back')
+      })
       .catch(err => next(err))
   },
   removeFollowship: (req, res, next) => {
     const unfollowingId = req.params.id
-     return Promise.all([
+    return Promise.all([
       User.findByPk(unfollowingId),
       Followship.findOne({ where: { followerId: getUser(req).id, followingId: unfollowingId } })
     ])
@@ -149,10 +173,11 @@ const userController = {
         if (!followship) throw new Error('尚未追蹤該用戶')
         return followship.destroy()
       })
-      .then(() => {return res.redirect('back')})
+      .then(() => { return res.redirect('back') })
       .catch(err => next(err))
-   
+
   }
+
 }
 
 module.exports = userController

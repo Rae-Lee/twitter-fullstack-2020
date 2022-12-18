@@ -8,7 +8,7 @@ const userController = require('../controllers/user-controller')
 const { authenticated } = require('../middleware/auth')
 const { generalErrorHandler } = require('../middleware/error-handler')
 
-router.use('/admin',  admin)
+router.use('/admin', admin)
 
 router.get('/signup', userController.signUpPage)
 router.post('/signup', userController.signUp)
@@ -18,11 +18,13 @@ router.post('/signin', passport.authenticate('local', { failureRedirect: '/signi
 
 router.get('/logout', userController.logout)
 
-router.get('/tweets',authenticated, tweetController.getTweets)
-router.post('/followships/:id', userController.addFollowship)
-router.delete('/followships/:id', userController.removeFollowship)
-router.get('/', (req, res) => res.render('followship'))
-// router.use('/', (req, res) => res.redirect('/tweets'))
+router.get('/tweets', authenticated, tweetController.getTweets)
+router.get('/users/:id/followings', authenticated, userController.getFollowings)
+router.get('/users/:id/followers', authenticated, userController.getFollowers)
+router.post('/followships', authenticated, userController.addFollowship)
+router.delete('/followships/:id', authenticated, userController.removeFollowship)
+
+router.use('/', (req, res) => res.redirect('/tweets'))
 router.use('/', generalErrorHandler)
 
 module.exports = router

@@ -18,7 +18,16 @@ router.post('/signin', passport.authenticate('local', { failureRedirect: '/signi
 
 router.get('/logout', userController.logout)
 
-router.get('/users/:id', authenticated, userController.getTweets)
+// router.get('/users/:id/followers', authenticated, userController.getFollowers)
+// router.get('/users/:id/followings', authenticated, userController.getFollowings)
+// router.get('/users/:id/likes', authenticated, userController.getLikes)
+// router.get('/users/:id/replies', authenticated, userController.getReplies)
+router.get('/users/:id/tweets', authenticated, userController.getTweets)
+router.get('/edit', authenticated, userController.editUserPage)
+router.put('/edit', authenticated, userController.editUser)
+// router.get('/users/:id', authenticated, userController.getUser)
+// router.put('/users/:id', authenticated, userController.putUser)
+
 router.post('/tweets/:id/like', authenticated, tweetController.addLike)
 router.post('/tweets/:id/unlike', authenticated, tweetController.removeLike)
 router.post('/tweets', authenticated, tweetController.postTweet)

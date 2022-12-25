@@ -87,12 +87,18 @@ const userController = {
       const data = await services.getTweets(req)
       const topFollowings = await services.getTopUsers(req)
       const tweetslength = data.length
+      const followingList = viewUser && viewUser.Followings.map(following => following.id)
+      user = {
+        ...user,
+        isFollowed : followingList.includes(user.id)
+      }
       res.render('tweet', {
         viewUser,
         tweets: data,
         user: user.toJSON(),
         topFollowings,
-        tweetslength
+        tweetslength,
+        followingList
       })
     } catch (err) { next(err) }
   },
@@ -241,12 +247,18 @@ const userController = {
       }) || []
       const topFollowings = await services.getTopUsers(req)
       const repliesLength = replies.length
+      const followingList = viewUser && viewUser.Followings.map(following => following.id)
+      user = {
+        ...user,
+        isFollowed: followingList.includes(user.id)
+      }
       res.render('reply', {
         viewUser,
         user: user.toJSON(),
         replies,
         topFollowings,
-        repliesLength
+        repliesLength,
+        followingList
       })
     } catch (err) { next(err) }
   },
@@ -329,11 +341,17 @@ const userController = {
         isLiked: t.Likes.some(f => f.UserId === viewUser.id)
       }))
       const topFollowings = await services.getTopUsers(req)
+      const followingList = viewUser && viewUser.Followings.map(following => following.id)
+      user = {
+        ...user,
+        isFollowed: followingList.includes(user.id)
+      }
       res.render('like', {
         viewUser,
         user: user.toJSON(),
         tweets,
-        topFollowings
+        topFollowings,
+        followingList
       })
     }
     catch (err) { next(err) }
